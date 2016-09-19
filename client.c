@@ -43,6 +43,7 @@ int main()
 	file = fopen("output.txt", "wb");
 	while ((bytes_received = read(socket_id, buffer, BUF_SIZE)) > 0) {
 		fwrite(buffer, 1, bytes_received, file);
+		printf("%s\n", buffer);
 	}
 	
 	if (bytes_received < 0)

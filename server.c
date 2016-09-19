@@ -48,12 +48,25 @@ void* thread_function(void *param)
 	}
 	while(fgets(buffer, BUFFER_SIZE, file)!=NULL){
 		commandFile = popen(buffer, "r");
-		while(fgets(buffer, BUFFER_SIZE, commandFile)!=NULL){
-			printf("%s", buffer);	
-		}
-		pclose(commandFile);
 	}
-	fclose(file);
+	while (TRUE) {
+		bytes_read = fread(buffer, 1, BUFFER_SIZE, commandFile);
+	
+		if (bytes_read > 0) {
+			bytes_send = write(client_id, buffer, bytes_read);
+			if (bytes_send < bytes_read)
+				printf("Error sending file.\n");
+		}
+
+		if (bytes_read < BUFFER_SIZE) {
+			if (feof(commandFile))
+				printf("File was sent.\n");
+			if (ferror(commandFile))
+				printf("Error reading from file.\n");
+			break;
+		}
+	}
+	pclose(commandFile);
 	close(client_id);	
 }
 
